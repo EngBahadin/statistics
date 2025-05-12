@@ -1,0 +1,253 @@
+# 1. Creating Frequency Distribution and Histograms
+# Frequency Distribution
+def frequency_distribution(data, num_classes):
+    min_val = min(data)
+    max_val = max(data)
+    class_width = (max_val - min_val) // num_classes + 1
+    classes = []
+    frequencies = []
+    for i in range(num_classes):
+        lower = min_val + i * class_width
+        upper = lower + class_width - 1
+        classes.append((lower, upper))
+        freq = sum(lower <= x <= upper for x in data)
+        frequencies.append(freq)
+    return classes, frequencies
+
+# ------------------------------
+
+# Class Midpoint
+def class_midpoints(classes):
+    return [(lower + upper) / 2 for lower, upper in classes]
+
+# ------------------------------
+
+# Class Boundaries
+def class_boundaries(classes):
+    boundaries = []
+    for i, (lower, upper) in enumerate(classes):
+        if i == 0:
+            lower_boundary = lower - 0.5
+        else:
+            lower_boundary = (classes[i-1][1] + lower) / 2
+        if i == len(classes) - 1:
+            upper_boundary = upper + 0.5
+        else:
+            upper_boundary = (upper + classes[i+1][0]) / 2
+        boundaries.append((lower_boundary, upper_boundary))
+    return boundaries
+
+# ------------------------------
+
+# Relative Frequency
+def relative_frequencies(frequencies):
+    total = sum(frequencies)
+    return [f / total for f in frequencies]
+
+# ------------------------------
+
+# Cumulative Frequency
+def cumulative_frequencies(frequencies):
+    cum = 0
+    result = []
+    for f in frequencies:
+        cum += f
+        result.append(cum)
+    return result
+
+# ------------------------------
+
+# 2. Finding the Center of Data Set: Mean, Median, Mode
+def mean(data):
+    return sum(data) / len(data)
+
+# ------------------------------
+
+def median(data):
+    data_sorted = sorted(data)
+    n = len(data_sorted)
+    if n % 2 == 1:
+        return data_sorted[n // 2]
+    else:
+        return (data_sorted[n // 2 - 1] + data_sorted[n // 2]) / 2
+
+# ------------------------------
+
+def mode(data):
+    counts = {}
+    for x in data:
+        counts[x] = counts.get(x, 0) + 1
+    max_count = max(counts.values())
+    return [k for k, v in counts.items() if v == max_count]
+
+# ------------------------------
+
+# 3. Mean of the Frequency Distribution
+def mean_freq_dist(freq, midpoints):
+    total = sum(freq)
+    return sum(f * m for f, m in zip(freq, midpoints)) / total
+
+# ------------------------------
+
+# 4. Weighted Mean
+def weighted_mean(values, weights):
+    return sum(x * w for x, w in zip(values, weights)) / sum(weights)
+
+# ------------------------------
+
+# 5. Variation: Range, Standard Deviation, Variance
+def data_range(data):
+    return max(data) - min(data)
+
+# ------------------------------
+
+def variance(data):
+    n = len(data)
+    m = mean(data)
+    return sum((x - m) ** 2 for x in data) / (n - 1)
+
+# ------------------------------
+
+def stdev(data):
+    return variance(data) ** 0.5
+
+# ------------------------------
+
+# Alternative variance formula (shortcut)
+def variance_shortcut(data):
+    n = len(data)
+    sum_x = sum(data)
+    sum_x2 = sum(x ** 2 for x in data)
+    return (n * sum_x2 - sum_x ** 2) / (n * (n - 1))
+
+# ------------------------------
+
+# 6. Empirical Rule
+def empirical_rule(mean, stdev):
+    return {
+        "68%": (mean - stdev, mean + stdev),
+        "95%": (mean - 2 * stdev, mean + 2 * stdev),
+        "99.7%": (mean - 3 * stdev, mean + 3 * stdev)
+    }
+
+# ------------------------------
+
+# 7. Coefficient of Variation
+def coefficient_of_variation(data):
+    return stdev(data) / mean(data) * 100
+
+# ------------------------------
+
+# 8. Z-Score, Percentiles, Quartiles, IQR, Outlier
+def z_score(x, data):
+    return (x - mean(data)) / stdev(data)
+
+# ------------------------------
+
+def percentile(data, x):
+    count = sum(val < x for val in data)
+    return count / len(data) * 100
+
+# ------------------------------
+
+def quartiles(data):
+    data_sorted = sorted(data)
+    n = len(data_sorted)
+    q2 = median(data_sorted)
+    if n % 2 == 0:
+        lower = data_sorted[:n // 2]
+        upper = data_sorted[n // 2:]
+    else:
+        lower = data_sorted[:n // 2]
+        upper = data_sorted[n // 2 + 1:]
+    q1 = median(lower)
+    q3 = median(upper)
+    return q1, q2, q3
+
+# ------------------------------
+
+def iqr(data):
+    q1, _, q3 = quartiles(data)
+    return q3 - q1
+
+# ------------------------------
+
+def is_outlier(x, data):
+    q1, _, q3 = quartiles(data)
+    iqr_val = q3 - q1
+    lower_bound = q1 - 1.5 * iqr_val
+    upper_bound = q3 + 1.5 * iqr_val
+    return x < lower_bound or x > upper_bound
+
+# ------------------------------
+
+# 9. Observed, Classical, Subjective Probability
+def observed_probability(event_count, total_trials):
+    return event_count / total_trials
+
+# ------------------------------
+
+def classical_probability(favorable, total):
+    return favorable / total
+
+# ------------------------------
+
+# Subjective probability is estimated based on judgment (not calculated)
+
+# ------------------------------
+
+# 10. Addition Rule for Probability
+def addition_rule(PA, PB):
+    return PA + PB
+
+# ------------------------------
+
+def addition_rule_not_mutually_exclusive(PA, PB, PAB):
+    return PA + PB - PAB
+
+# ------------------------------
+
+# 11. Multiplication Rule for "And" Probabilities
+def multiplication_rule(PA, PB):
+    return PA * PB
+
+# ------------------------------
+
+def multiplication_rule_dependent(PA, PB_given_A):
+    return PA * PB_given_A
+
+# ------------------------------
+
+# 12. Conditional Probability
+def conditional_probability(PA_and_B, PA):
+    return PA_and_B / PA
+
+# ------------------------------
+
+# 13. Complementary Events, "At Least One"
+def complementary_probability(PA):
+    return 1 - PA
+
+# ------------------------------
+
+def at_least_one(P_none):
+    return 1 - P_none
+
+# ------------------------------
+
+# 14. Counting Rule, Permutations, Combinations
+def factorial(n):
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+
+# ------------------------------
+
+def permutation(n, r):
+    return factorial(n) // factorial(n - r)
+
+# ------------------------------
+
+def combination(n, r):
+    return factorial(n) // (factorial(n - r) * factorial(r))
